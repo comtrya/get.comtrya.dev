@@ -1,14 +1,17 @@
 ## Kindly inspired by Porter.sh Windows install script
-param([String]$COMTRYA_PERMALINK='v0.4.5')
+$COMTRYA_REPO = "comtrya/comtrya"
+$COMTRYA_FILE_WINDOWS = "comtrya-x86_64-pc-windows-msvc.exe"
+
+$COMTRYA_LATEST_RELEASE_URI = "https://api.github.com/repos/$COMTRYA_REPO/releases/latest"
+$COMTRYA_URL = ((Invoke-RestMethod -Method GET -Uri $COMTRYA_LATEST_RELEASE_URI).assets | Where-Object name -EQ $COMTRYA_FILE_WINDOWS ).browser_download_url
 
 $COMTRYA_HOME="$env:USERPROFILE\.comtrya"
-$COMTRYA_URL="https://github.com/comtrya/comtrya/releases/download/"
 
-echo "Installing porter to $COMTRYA_HOME"
+echo "Installing comtrya to $COMTRYA_HOME"
 
 mkdir -f $COMTRYA_HOME
 
-(new-object System.Net.WebClient).DownloadFile("$COMTRYA_URL/$COMTRYA_PERMALINK/comtrya-x86_64-pc-windows-msvc.exe", "$COMTRYA_HOME\comtrya.exe")
+(new-object System.Net.WebClient).DownloadFile("$COMTRYA_URL", "$COMTRYA_HOME\comtrya.exe")
 
 echo ""
 echo "Installed $(& $COMTRYA_HOME\comtrya.exe --version)"
