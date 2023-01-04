@@ -73,6 +73,10 @@ getPackage() {
         arch=$(uname -m)
         echo $arch
         case $arch in
+        "arm64")
+        suffix="-aarch64-apple-darwin"
+        ;;
+
         *)
         # We rely on Rosetta atm
         suffix="-x86_64-apple-darwin"
