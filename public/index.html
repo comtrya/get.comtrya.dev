@@ -9,20 +9,27 @@ export REPO=comtrya
 export SUCCESS_CMD="$REPO --help"
 export BINLOCATION="/usr/local/bin"
 
+inferVersionFromLatest() {
+    echo $(curl -sI https://github.com/$OWNER/$REPO/releases/latest | grep -i "location:" | awk -F"/" '{ printf "%s", $NF }' | tr -d '\r')
+}
 
-version=$(curl -sI https://github.com/$OWNER/$REPO/releases/${VERSION:=latest} | grep -i "location:" | awk -F"/" '{ printf "%s", $NF }' | tr -d '\r')
-if [ ! $version ]; then
-    echo "Failed while attempting to install $REPO. Please manually install:"
-    echo ""
-    echo "1. Open your web browser and go to https://github.com/$OWNER/$REPO/releases"
-    echo "2. Download the latest release for your platform. Call it '$REPO'."
-    echo "3. chmod +x ./$REPO"
-    echo "4. mv ./$REPO $BINLOCATION"
-    if [ -n "$ALIAS_NAME" ]; then
-        echo "5. ln -sf $BINLOCATION/$REPO /usr/local/bin/$ALIAS_NAME"
+validateVersion() {
+    local version=$1
+    local status=$(curl -s -o /dev/null https://github.com/$OWNER/$REPO/releases/$version -w "%{http_code}")
+
+    if [ $status != "200" ]; then
+        echo "Failed while attempting to install $REPO. Please manually install:"
+        echo ""
+        echo "1. Open your web browser and go to https://github.com/$OWNER/$REPO/releases"
+        echo "2. Download the latest release for your platform. Call it '$REPO'."
+        echo "3. chmod +x ./$REPO"
+        echo "4. mv ./$REPO $BINLOCATION"
+        if [ -n "$ALIAS_NAME" ]; then
+            echo "5. ln -sf $BINLOCATION/$REPO /usr/local/bin/$ALIAS_NAME"
+        fi
+        exit 1
     fi
-    exit 1
-fi
+}
 
 hasCli() {
 
@@ -60,6 +67,8 @@ getPackage() {
     userid=$(id -u)
 
     suffix=""
+    
+    version=$1
 
     case $uname in
 
@@ -175,4 +184,7 @@ getPackage() {
 }
 
 hasCli
-getPackage
+
+version=${VERSION:=$(inferVersionFromLatest)}
+validateVersion $version
+getPackage $version
