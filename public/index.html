@@ -10,8 +10,9 @@ export SUCCESS_CMD="$REPO --help"
 export BINLOCATION="/usr/local/bin"
 
 
-version=$(curl -sI https://github.com/$OWNER/$REPO/releases/${VERSION:=latest} | grep -i "location:" | awk -F"/" '{ printf "%s", $NF }' | tr -d '\r')
-if [ ! $version ]; then
+
+hasVersion=$(curl -s -o /dev/null https://github.com/$OWNER/$REPO/releases/${VERSION:=latest} -w "%{http_code}")
+if [ $hasVersion -eq "200" ]; then
     echo "Failed while attempting to install $REPO. Please manually install:"
     echo ""
     echo "1. Open your web browser and go to https://github.com/$OWNER/$REPO/releases"
