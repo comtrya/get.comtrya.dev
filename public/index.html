@@ -110,7 +110,7 @@ getPackage() {
         rm "$targetFile"
     fi
 
-    url=https://github.com/$OWNER/$REPO/releases/download/$version/$REPO$suffix
+    url=https://github.com/$OWNER/$REPO/releases/download/$VERSION/$REPO$suffix
     echo "Downloading package $url as $targetFile"
 
     curl -sSL $url --output "$targetFile"
