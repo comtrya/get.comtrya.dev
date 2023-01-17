@@ -1,8 +1,13 @@
-## Kindly inspired by Porter.sh Windows install script
+
+param (
+  [Parameter()]
+  $Version = "latest"
+)
+
 $COMTRYA_REPO = "comtrya/comtrya"
 $COMTRYA_FILE_WINDOWS = "comtrya-x86_64-pc-windows-msvc.exe"
 
-$COMTRYA_LATEST_RELEASE_URI = "https://api.github.com/repos/$COMTRYA_REPO/releases/latest"
+$COMTRYA_LATEST_RELEASE_URI = "https://api.github.com/repos/$COMTRYA_REPO/releases/$Version"
 $COMTRYA_URL = ((Invoke-RestMethod -Method GET -Uri $COMTRYA_LATEST_RELEASE_URI).assets | Where-Object name -EQ $COMTRYA_FILE_WINDOWS ).browser_download_url
 
 $COMTRYA_HOME="$env:USERPROFILE\.comtrya"
