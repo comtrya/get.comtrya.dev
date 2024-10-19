@@ -9,9 +9,8 @@ export REPO=comtrya
 export SUCCESS_CMD="$REPO --help"
 export BINLOCATION="/usr/local/bin"
 
-
-version=$(curl -sI https://github.com/$OWNER/$REPO/releases/${VERSION:=latest} | grep -i "location:" | awk -F"/" '{ printf "%s", $NF }' | tr -d '\r')
-if [ ! $version ]; then
+status_code=$(curl -sI -o /dev/null -w "%{http_code}" https://github.com/${OWNER}/${REPO}/releases/${VERSION:=latest})
+if [ "$status_code" -eq 404 ]; then
     echo "Failed while attempting to install $REPO. Please manually install:"
     echo ""
     echo "1. Open your web browser and go to https://github.com/$OWNER/$REPO/releases"
@@ -108,8 +107,8 @@ getPackage() {
     if [ -e "$targetFile" ]; then
         rm "$targetFile"
     fi
-
-    url=https://github.com/$OWNER/$REPO/releases/download/$version/$REPO$suffix
+		
+    url=https://github.com/$OWNER/$REPO/releases/download/$VERSION/$REPO$suffix
     echo "Downloading package $url as $targetFile"
 
     curl -sSL $url --output "$targetFile"
